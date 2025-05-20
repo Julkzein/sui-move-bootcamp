@@ -100,14 +100,14 @@ fun award_medal(hero: &mut Hero, medalStorage: &mut MedalStorage, medalName: Str
 }
 
 fun get_medal(name: String, medalStorage: &mut MedalStorage): option::Option<Medal> {
-    let mut i = 0;
+    let mut nb = 0;
     let length = medalStorage.medals.length();
-    while (i < length) {
-        if (medalStorage.medals[i].name == name) {
-            let extractedMedal = vector::remove(&mut medalStorage.medals, i);
+    while (nb < length) {
+        if (medalStorage.medals[nb].name == name) {
+            let extractedMedal = vector::remove(&mut medalStorage.medals, nb);
             return option::some(extractedMedal)
         };
-        i = i + 1;
+        nb = nb + 1;
     };
     option::none<Medal>()
 }
