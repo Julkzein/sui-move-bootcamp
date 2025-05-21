@@ -82,21 +82,11 @@ public entry fun mint_and_keep_hero(heroReg: &mut HeroRegistry, name: String, ct
     transfer::transfer(hero, ctx.sender());
 }
 
-public fun award_medal1(hero: &mut Hero, medalStorage: &mut MedalStorage) {
-    award_medal(hero, medalStorage, b"Medal 1".to_string());
-}
 
-public fun award_medal2(hero: &mut Hero, medalStorage: &mut MedalStorage) {
-    award_medal(hero, medalStorage, b"Medal 2".to_string());
-}
-
-
-fun award_medal(hero: &mut Hero, medalStorage: &mut MedalStorage, medalName: String) {
-    let medalOption: Option<Medal> = get_medal(medalName, medalStorage);
-
-    assert!(medalOption.is_some(), EMedalOfHonorNotAvailable);
-
-    hero.medals.append(medalOption.to_vec());
+fun award_medal(hero: &mut Hero, medal_storage: &mut MedalStorage, medal_name: String) {
+    let medal_opt = get_medal(medal_name, medal_storage);
+    assert!(option::is_some(&medal_opt), EMedalOfHonorNotAvailable);
+    vector::append(&mut hero.medals, option::to_vec(medal_opt));
 }
 
 fun get_medal(name: String, medalStorage: &mut MedalStorage): option::Option<Medal> {
@@ -205,23 +195,20 @@ fun test_medal_award() {
     test.next_tx(@USER);
 
     let mut registry = take_shared<HeroRegistry>(&test);
-
-    let mut medalStorage = take_shared<MedalStorage>(&test); 
+    let mut medal_storage = take_shared<MedalStorage>(&test); 
 
     let mut hero = mint_hero(&mut registry, b"Batman".to_string(), test.ctx());
 
-    award_medal1(&mut hero, &mut medalStorage);
-
+    award_medal(&mut hero, &mut medal_storage, b"Medal 1".to_string());
     assert!(hero.medals.length() == 1, 12); 
-    assert!(medalStorage.medals.length() == 1, 13);
+    assert!(medal_storage.medals.length() == 1, 13);
 
-    award_medal2(&mut hero, &mut medalStorage);
-
+    award_medal(&mut hero, &mut medal_storage, b"Medal 2".to_string());
     assert!(hero.medals.length() == 2, 14); 
-    assert!(medalStorage.medals.length() == 0, 15);
+    assert!(medal_storage.medals.length() == 0, 15);
 
     destroy(hero);
     return_shared(registry);
-    return_shared(medalStorage);
+    return_shared(medal_storage);
     test.end();
- }
+}
