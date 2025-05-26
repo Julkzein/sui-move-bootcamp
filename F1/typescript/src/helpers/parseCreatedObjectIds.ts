@@ -7,6 +7,7 @@ interface Args {
 
 interface Response {
   heroesIds: string[];
+  weaponsIds: string[]
 }
 
 /**
@@ -15,7 +16,20 @@ interface Response {
  */
 export const parseCreatedObjectsIds = ({ objectChanges }: Args): Response => {
   // TODO: Implement the function
+  const weaponsIds = objectChanges
+    .filter(
+      (item) => item.type === "created" && item.objectType === `${ENV.PACKAGE_ID}::hero::Weapon`
+    )
+    .map((item) => (item as SuiObjectChangeCreated).objectId);
+
+  const heroesIds = objectChanges
+    .filter(
+      (item) => item.type === "created" && item.objectType === `${ENV.PACKAGE_ID}::hero::Hero`
+    )
+    .map((item) => (item as SuiObjectChangeCreated).objectId);
+
   return {
-    heroesIds: [],
+    weaponsIds,
+    heroesIds,
   };
 };

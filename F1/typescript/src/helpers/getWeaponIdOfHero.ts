@@ -7,7 +7,27 @@ import { suiClient } from "../suiClient";
  */
 export const getWeaponIdOfHero = async (
   heroId: string
-): Promise<string | undefined> => {
-  // TODO: Implement this function
-  return undefined;
+): Promise<string | null> => {
+  const hero = await suiClient
+    .getObject({
+      id: heroId,
+      options: {
+        showContent: true,
+      },
+    })
+    .then((res) => res.data);
+  const { fields } = hero?.content as Extract<
+    SuiParsedData,
+    { dataType: "moveObject" }
+  >;
+  const {
+    weapon: {
+      fields: {
+        id: { id },
+      },
+    },
+  } = fields as {
+    weapon: { fields: { id: { id: string | null } } };
+  };
+  return id;
 };

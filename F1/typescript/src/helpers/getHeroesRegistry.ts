@@ -1,6 +1,6 @@
-import { SuiParsedData } from "@mysten/sui/dist/cjs/client";
-import { ENV } from "../env";
 import { suiClient } from "../suiClient";
+import { ENV } from "../env";
+import { SuiParsedData } from "@mysten/sui/client";
 
 interface HeroesRegistry {
   ids: string[];
@@ -8,12 +8,27 @@ interface HeroesRegistry {
 }
 /**
  * Gets the Heroes ids in the Hero Registry.
- * We need to get the Hero Registry object, and return the contents of the ids vector, along with the counter field.
+ * We need to get the Hero Registry object, and return the contents of the ids vector.
  */
 export const getHeroesRegistry = async (): Promise<HeroesRegistry> => {
-  // TODO: Implement this function
+  const registry = await suiClient
+    .getObject({
+      id: ENV.HEROES_REGISTRY_ID,
+      options: {
+        showContent: true,
+      },
+    })
+    .then((res) => res.data);
+  const { fields } = registry?.content as Extract<
+    SuiParsedData,
+    { dataType: "moveObject" }
+  >;
+  const { counter, ids } = fields as {
+    counter: string;
+    ids: string[];
+  };
   return {
-    ids: [],
-    counter: 0,
+    ids,
+    counter: parseInt(counter),
   };
 };
