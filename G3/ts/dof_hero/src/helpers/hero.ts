@@ -8,6 +8,12 @@ export const adminCreateHero = async (name: string) => {
   const userSigner = getSigner({ secretKey: ENV.USER_SECRET_KEY });
   const tx = new Transaction();
 
+  let type_para = tx.moveCall({
+    target: `0x1::type_name::get`, 
+    typerArguments: ["0x2::coin::COIN<0x2::sui::SUI>"],
+    arguments: []
+  }); 
+
   // mint and transfer the hero to the user
   const result = await suiClient.signAndExecuteTransaction({
     transaction: tx,

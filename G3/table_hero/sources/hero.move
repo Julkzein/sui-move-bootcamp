@@ -5,6 +5,13 @@ use sui::table::{Self, Table};
 
 // create the keys
 
+/// AttributeKey enum for hero attributes
+public enum AttributeKey has copy, drop, store {
+    Fire,
+    Water,
+    Earth,
+    Air,
+}
 
 public struct Hero has key {
     id: UID,
@@ -29,10 +36,14 @@ public fun create_hero(name: String, ctx: &mut TxContext): Hero {
 }
 
 public fun increase_attribute(hero: &mut Hero, key: AttributeKey, amount: u16) {
+    let attribute = hero.attributes.borrow_mut(key); 
+    *attribute = *attribute + amount
     // increase the attribute by the amount
 }
 
 public fun get_attribute(hero: &Hero, key: AttributeKey): u16 {
+    let attribute = hero.attributes.borrow(key); 
+    *attribute
     // get the attribute value
 }
 
